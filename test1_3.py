@@ -44,7 +44,6 @@ def plot_fitting(x_test, y_test, y_pred, title):
     plt.tight_layout()
     plt.show()
 
-
 # Main Function
 def main(file_path):
     x_train, x_test, y_train, y_test = load_data(file_path)
@@ -53,8 +52,17 @@ def main(file_path):
                            ['Linear Regression', 'Ridge Regression', 'LASSO Regression']):
         score, mse, y_pred = train_and_evaluate(model, x_train, y_train, x_test, y_test)
         print(f'{name} - Score: {score}, MSE: {mse}')
+        model.fit(x_train, y_train)
+        score = model.score(x_test, y_test)
+        result = model.predict(x_test)
+        plt.figure()
+        plt.plot(np.arange(len(result)), y_test, 'go-', label='true value')
+        plt.plot(np.arange(len(result)), result, 'ro-', label='predict value')
+        plt.title('score: %f' % score)
+        plt.legend()
+        plt.show()
         plot_fitting(x_test, y_test, y_pred, name)
 
 
 # Run the main function with the path to your Excel file
-main('path_to_your_excel_file.xlsx')
+main('./data.xlsx')
