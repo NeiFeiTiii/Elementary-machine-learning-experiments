@@ -51,7 +51,7 @@ class Polynomial_model:
 
 
 # Step 3: Instantiate Polynomial Model
-def fit_and_plot(x, y, degree, model_type):
+def fit_and_plot(ax, x, y, degree, model_type, color):
     model = Polynomial_model(degree)
     model.fit(x, y, model_type)
     y_pred = model.predict(x)
@@ -64,12 +64,12 @@ def fit_and_plot(x, y, degree, model_type):
     coef, intercept = model.getParam()
 
     # Step 7: Plot fitting graph
-    plt.scatter(x, y, color='blue')
-    plt.plot(x, y_pred, color='red')
-    plt.title(f'{model_type.capitalize()} Regression (Degree {degree})')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.show()
+    ax.scatter(x, y, color='blue', label='Data' if degree == 2 else "")
+    ax.plot(x, y_pred, color=color, label=f'Degree {degree}')
+    ax.set_title(f'{model_type.capitalize()} Regression')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.legend()
 
     return coef, intercept, score, mse
 
@@ -78,15 +78,53 @@ def fit_and_plot(x, y, degree, model_type):
 data1, data2 = load_data()
 
 # Fit and plot for data1
-for degree in [2, 3, 4, 5]:
-    for model_type in ['linear', 'ridge', 'lasso']:
-        print(f"Data1 - {model_type.capitalize()} Regression (Degree {degree})")
-        coef, intercept, score, mse = fit_and_plot(data1[0], data1[1], degree, model_type)
-        print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
-
+fig, ax = plt.subplots()
+colors = ['red', 'green', 'orange', 'purple']
+#plt.figure()
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data1 - Linear Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data1[0], data1[1], degree, 'linear', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
+#plt.figure()
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data1 - Linear Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data1[0], data1[1], degree, 'lasso', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
+#plt.figure()
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data1 - Linear Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data1[0], data1[1], degree, 'ridge', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
 # Fit and plot for data2
-for degree in [2, 3, 4, 5]:
-    for model_type in ['linear', 'ridge', 'lasso']:
-        print(f"Data2 - {model_type.capitalize()} Regression (Degree {degree})")
-        coef, intercept, score, mse = fit_and_plot(data2[0], data2[1], degree, model_type)
-        print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data2 - Linear Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data2[0], data2[1], degree, 'linear', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
+
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data2 - Lasso Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data2[0], data2[1], degree, 'lasso', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
+
+fig, ax = plt.subplots()
+for degree, color in zip([2, 3, 4, 5], colors):
+    print(f"Data2 - Ridge Regression (Degree {degree})")
+    coef, intercept, score, mse = fit_and_plot(ax, data2[0], data2[1], degree, 'ridge', color)
+    print(f"Coefficients: {coef}, Intercept: {intercept}, Score: {score}, MSE: {mse}\n")
+plt.show()
+plt.close()
