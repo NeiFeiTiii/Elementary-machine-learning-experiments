@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
 
 # Given dataset
 dataSet = np.array([
@@ -24,10 +23,31 @@ dataSet = np.array([
     [1.2327, 1.4708], [2.1465, 1.1435], [1.5673, 0.7679], [2.9414, 1.1288]
 ])
 
-# Function to plot the clusters
-def plot_clusters(data, kmeans, k):
-    plt.scatter(data[:, 0], data[:, 1], c=kmeans.labels_, cmap='viridis')
-    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=300, c='red')
+def initialize_centroids(data, k):
+    indices = np.random.choice(data.shape[0], k, replace=False)
+    return data[indices]
+
+def assign_clusters(data, centroids):
+    distances = np.linalg.norm(data[:, np.newaxis] - centroids, axis=2)
+    return np.argmin(distances, axis=1)
+
+def update_centroids(data, labels, k):
+    new_centroids = np.array([data[labels == i].mean(axis=0) for i in range(k)])
+    return new_centroids
+
+def kmeans(data, k, max_iters=100, tol=1e-4):
+    centroids = initialize_centroids(data, k)
+    for _ in range(max_iters):
+        labels = assign_clusters(data, centroids)
+        new_centroids = update_centroids(data, labels, k)
+        if np.all(np.abs(new_centroids - centroids) < tol):
+            break
+        centroids = new_centroids
+    return centroids, labels
+
+def plot_clusters(data, centroids, labels, k):
+    plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
+    plt.scatter(centroids[:, 0], centroids[:, 1], s=300, c='red')
     plt.title(f'K-Means Clustering with K={k}')
     plt.xlabel('Feature 1')
     plt.ylabel('Feature 2')
@@ -35,5 +55,5 @@ def plot_clusters(data, kmeans, k):
 
 # Perform K-means clustering for K=2, 3, 5
 for k in [2, 3, 5]:
-    kmeans = KMeans(n_clusters=k, random_state=0).fit(dataSet)
-    plot_clusters(dataSet, kmeans, k)
+    centroids, labels = kmeans(dataSet, k)
+    plot_clusters(dataSet, centroids, labels, k)
