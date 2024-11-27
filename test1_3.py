@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LinearRegression, Ridge, MultiTaskLassoCV
 from sklearn.metrics import mean_squared_error
-
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 
 # Step 1: Load Data
 def load_data(file_path):
-    data = pd.read_excel('./data.xlsx')
+    data = pd.read_excel(file_path)
     data = data.iloc[:, 1:]  # Remove the first column
     x = data.iloc[:, :-4].values  # Independent variables
     y = data.iloc[:, -4:].values  # Dependent variables
-    return train_test_split(x, y, test_size=0.2, random_state=42)
+    return train_test_split(x, y, test_size=0.3, random_state=42)
 
 
 # Step 2: Instantiate Regression Models
@@ -23,9 +23,12 @@ lasso_reg = MultiTaskLassoCV(cv=10)
 
 # Step 3: Train and Evaluate Models
 def train_and_evaluate(model, x_train, y_train, x_test, y_test):
-    model.fit(x_train, y_train)
-    score = model.score(x_test, y_test)
-    y_pred = model.predict(x_test)
+    param_grid = {'alpha': [0.1, 0.5, 1.0, 5.0, 10.0]} if isinstance(model, Ridge) else {}
+    grid_search = GridSearchCV(model, param_grid, cv=5, scoring='neg_mean_squared_error')
+    grid_search.fit(x_train, y_train)
+    best_model = grid_search.best_estimator_
+    score = best_model.score(x_test, y_test)
+    y_pred = best_model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
     return score, mse, y_pred
 
